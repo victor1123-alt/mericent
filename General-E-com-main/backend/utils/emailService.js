@@ -3,12 +3,14 @@ const nodemailer = require('nodemailer');
 // Create transporter using Brevo SMTP
 const transporter = nodemailer.createTransport({
   host: 'smtp-relay.brevo.com',
-  port: 465,
-  secure: true, // SSL
+  port: 587,
+  secure: false, // STARTTLS
   auth: {
     user: process.env.BREVO_SMTP_USER,
     pass: process.env.BREVO_SMTP_PASS
-  }
+  },
+  connectionTimeout: 60000, // 60 seconds
+  greetingTimeout: 30000, // 30 seconds
 });
 
 // Optional: Test transporter connection (only in development)
@@ -127,7 +129,7 @@ const sendEmail = async (to, template, data, status = null) => {
     const templateContent = emailTemplates[template](data, status);
 
     const mailOptions = {
-      from: process.env.EMAIL_FROM,
+      from: process.env.BREVO_FROM_EMAIL || process.env.EMAIL_FROM,
       to: to,
       subject: templateContent.subject,
       html: templateContent.html
