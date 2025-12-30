@@ -1,0 +1,225 @@
+POST https://mericent.onrender.com/api/productPost
+Content-Type: application/json
+
+{
+    "productName":"perfume"
+}
+
+###
+
+POST https://mericent.onrender.com/api/productPost
+Content-Type: application/json
+
+{
+    "productName": "Designer Perfume - Midnight Rose",
+    "description": "A luxurious floral fragrance with notes of rose, jasmine, and vanilla. Perfect for evening wear.",
+    "price": 12500,
+    "quantity": 50,
+    "category": "beauty",
+    "isAvailable": true
+}
+
+###
+
+POST https://mericent.onrender.com/api/productPost
+Content-Type: application/json
+
+{
+    "productName": "Wireless Bluetooth Headphones",
+    "description": "High-quality wireless headphones with noise cancellation and 30-hour battery life.",
+    "price": 8500,
+    "quantity": 25,
+    "category": "electronics",
+    "isAvailable": true
+}
+
+###
+
+POST https://mericent.onrender.com/api/productPost
+Content-Type: application/json
+
+{
+    "productName": "Cotton T-Shirt - Navy Blue",
+    "description": "Comfortable 100% cotton t-shirt, perfect for casual wear. Available in multiple sizes.",
+    "price": 2500,
+    "quantity": 100,
+    "category": "clothing",
+    "isAvailable": true
+}
+
+###
+
+POST https://mericent.onrender.com/api/productPost
+Content-Type: application/json
+
+{
+    "productName": "Leather Wallet - Brown",
+    "description": "Genuine leather wallet with multiple card slots and coin pocket. Handcrafted quality.",
+    "price": 4500,
+    "quantity": 30,
+    "category": "accessories",
+    "isAvailable": true
+}
+
+###
+
+POST https://mericent.onrender.com/api/productPost
+Content-Type: application/json
+
+{
+    "productName": "Smart Fitness Watch",
+    "description": "Track your workouts, heart rate, and sleep patterns. Water-resistant and long battery life.",
+    "price": 15000,
+    "quantity": 15,
+    "category": "electronics",
+    "isAvailable": true
+}
+
+###
+
+POST https://mericent.onrender.com/api/productPost
+Content-Type: application/json
+
+{
+    "productName": "Yoga Mat - Purple",
+    "description": "Non-slip yoga mat made from eco-friendly materials. Perfect for home workouts.",
+    "price": 3500,
+    "quantity": 40,
+    "category": "sports",
+    "isAvailable": true
+}
+
+###
+
+POST https://mericent.onrender.com/api/productPost
+Content-Type: application/json
+
+{
+    "productName": "Ceramic Coffee Mug Set",
+    "description": "Set of 4 ceramic coffee mugs with modern design. Microwave and dishwasher safe.",
+    "price": 2800,
+    "quantity": 60,
+    "category": "home",
+    "isAvailable": true
+}
+
+###
+
+POST https://mericent.onrender.com/api/productPost
+Content-Type: application/json
+
+{
+    "productName": "Running Shoes - Black",
+    "description": "Lightweight running shoes with cushioning and breathable mesh upper. Size 7-12 available.",
+    "price": 6500,
+    "quantity": 35,
+    "category": "shoes",
+    "isAvailable": true
+}
+
+###
+
+POST https://mericent.onrender.com/api/productPost
+Content-Type: application/json
+
+{
+    "productName": "Organic Green Tea - 100g",
+    "description": "Premium organic green tea leaves. Rich in antioxidants and perfect for daily consumption.",
+    "price": 1200,
+    "quantity": 80,
+    "category": "food",
+    "isAvailable": true
+}
+
+###
+
+POST https://mericent.onrender.com/auth/signup
+Content-Type: application/json
+
+{
+    "firstName":"Alice",
+    "lastName":"Doe",
+    "email":"victormk043@gmail.com",
+    "password":"secret123"
+}
+
+
+###
+
+POST https://mericent.onrender.com/auth/login
+Content-Type: application/json
+
+{
+    "email":"victormk043@gmail.com",
+    "password":"secret123"
+}
+###
+
+GET https://mericent.onrender.com/auth/singleUser
+Cookie: token={{eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5NDE5ZmRhNDJhMWYxMjQ2YjFjYzJkYiIsInJvbGUiOiJ1c2VyIiwiZW1haWwiOiJ2aWN0b3JtazA0M0BnbWFpbC5jb20iLCJpYXQiOjE3NjU5MDg0NDIsImV4cCI6MTc2NjUxMzI0Mn0.xlMLvNfavkmdhJub-0SaXPDQsoRv-JeN3xAWQL_PJmM}}
+
+###
+
+@baseUrl = https://mericent.onrender.com
+@token = YOUR_JWT_TOKEN_HERE
+
+# ===== CART API TESTS =====
+
+### Get Cart (fetch user's cart)
+GET {{baseUrl}}/api/cart
+Authorization: Bearer {{token}}
+Cookie: token={{token}}
+
+### Add Item to Cart (requires valid productId)
+POST {{baseUrl}}/api/cart/add
+Authorization: Bearer {{token}}
+Content-Type: application/json
+Cookie: token={{token}}
+
+{
+    "productId": "PRODUCT_ID_HERE",
+    "quantity": 2
+}
+
+### Update Cart Item Quantity (requires valid itemId from cart)
+PUT {{baseUrl}}/api/cart/item/ITEM_ID_HERE
+Authorization: Bearer {{token}}
+Content-Type: application/json
+Cookie: token={{token}}
+
+{
+    "quantity": 5
+}
+
+### Remove Item from Cart (requires valid itemId from cart)
+DELETE {{baseUrl}}/api/cart/item/ITEM_ID_HERE
+Authorization: Bearer {{token}}
+Cookie: token={{token}}
+
+### Clear Entire Cart
+DELETE {{baseUrl}}/api/cart
+Authorization: Bearer {{token}}
+Cookie: token={{token}}
+
+### Checkout and Create Order
+POST {{baseUrl}}/api/cart/checkout
+Authorization: Bearer {{token}}
+Content-Type: application/json
+Cookie: token={{token}}
+
+{
+    "shippingAddress": "123 Main St, City, Country 12345",
+    "paymentMethod": "credit_card"
+}
+
+# ===== WORKFLOW EXAMPLE =====
+# 1. First, create a product and note its ID
+# 2. Signup/Login and copy the token from response
+# 3. Replace {{token}} with actual token
+# 4. Replace PRODUCT_ID_HERE with actual product ID
+# 5. Run "Add Item to Cart" and copy itemId from response
+# 6. Replace ITEM_ID_HERE with actual item ID
+# 7. Test other cart operations
+
+###
+
