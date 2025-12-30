@@ -4,7 +4,7 @@
 const fetch = globalThis.fetch || require('node-fetch');
 
 (async () => {
-  const url = 'https://mericent.onrender.com/api/orders';
+  const url = 'http://localhost:4444/api/orders';
   const payload = {
     items: [
       { productId: '000000000000000000000000', quantity: 1 } // replace with valid productId in your DB

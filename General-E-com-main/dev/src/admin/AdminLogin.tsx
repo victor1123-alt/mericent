@@ -18,7 +18,7 @@ const AdminLogin: React.FC = () => {
     setLoading(true);
     setError(null);
     try {
-      const res = await fetch("https://mericent.onrender.com/api/admin/login", {
+      const res = await fetch("http://localhost:4444/api/admin/login", {
         method: "POST",
         credentials: 'include',
         headers: { "Content-Type": "application/json" },

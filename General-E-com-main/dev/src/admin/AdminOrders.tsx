@@ -36,7 +36,7 @@ const AdminOrders: React.FC = () => {
 
   const loadOrders = async () => {
     try {
-      const response = await fetch("https://mericent.onrender.com/api/orders/all", {
+      const response = await fetch("http://localhost:4444/api/orders/all", {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token") || ""}`,
         }

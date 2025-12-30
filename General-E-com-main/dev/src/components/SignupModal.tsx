@@ -27,7 +27,7 @@ const SignupModal: React.FC<SignupModalProps> = ({ isOpen, onClose, openLogin })
   if (!isOpen) return null;
 
    const loginWithGoogle = () => {
-    window.location.href = "https://mericent.onrender.com/auth/google";
+    window.location.href = "http://localhost:4444/auth/google";
   };
   
   const handleEmailSignup = async () => {

@@ -68,7 +68,7 @@ const UserOrders: React.FC = () => {
         return;
       }
 
-      const response = await fetch('https://mericent.onrender.com/api/orders', {
+      const response = await fetch('http://localhost:4444/api/orders', {
         headers: {
           'Authorization': `Bearer ${token}`
         }
