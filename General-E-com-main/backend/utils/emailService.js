@@ -107,7 +107,9 @@ const emailTemplates = {
 const sendEmail = async (to, template, data, status = null) => {
   try {
     console.log('BREVO_API_KEY exists:', !!BREVO_API_KEY);
-    console.log('BREVO_API_KEY length:', BREVO_API_KEY?.length);
+    console.log('BREVO_API_KEY starts with:', BREVO_API_KEY?.substring(0, 10));
+    console.log('BREVO_FROM_EMAIL:', process.env.BREVO_FROM_EMAIL);
+    console.log('EMAIL_FROM:', process.env.EMAIL_FROM);
 
     const templateContent = emailTemplates[template](data, status);
 
@@ -123,12 +125,11 @@ const sendEmail = async (to, template, data, status = null) => {
       htmlContent: templateContent.html
     };
 
-    console.log('Sending email to:', to);
-    console.log('Sender email:', process.env.BREVO_FROM_EMAIL || process.env.EMAIL_FROM);
+    console.log('Email data prepared for:', to);
 
     const response = await axios.post(BREVO_API_URL, emailData, {
       headers: {
-        'Api-Key': BREVO_API_KEY,
+        'api-key': BREVO_API_KEY,
         'Content-Type': 'application/json'
       }
     });
@@ -136,7 +137,8 @@ const sendEmail = async (to, template, data, status = null) => {
     console.log('Email sent successfully:', response.data.messageId);
     return { success: true, messageId: response.data.messageId };
   } catch (error) {
-    console.error('Error sending email:', error.response?.data || error.message);
+    console.error('Full error response:', error.response?.data);
+    console.error('Error status:', error.response?.status);
     return { success: false, error: error.response?.data?.message || error.message };
   }
 };
