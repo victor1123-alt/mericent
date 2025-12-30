@@ -1,16 +1,16 @@
 portnumber = 4444
 
-network = http://localhost:4444
+network = https://mericent.onrender.com
 
 apis
  get request 
-    http://localhost:4444/api/product
+    https://mericent.onrender.com/api/product
 
 
 post request
-    http://localhost:4444/api/productPost
-    http://localhost:4444/auth/login
-    http://localhost:4444/auth/signup
+    https://mericent.onrender.com/api/productPost
+    https://mericent.onrender.com/auth/login
+    https://mericent.onrender.com/auth/signup
 
 cart routes :
 Routes: cartrouter.js mounts routes and protects them:
@@ -45,10 +45,10 @@ Known gaps and recommendations
 Testing examples
 ----------------
 - Login (frontend must include credentials to receive cookie):
-    - Fetch example: `fetch('http://localhost:4444/auth/login', { method: 'POST', credentials: 'include', headers: {'Content-Type':'application/json'}, body: JSON.stringify({email, password}) })`
+    - Fetch example: `fetch('https://mericent.onrender.com/auth/login', { method: 'POST', credentials: 'include', headers: {'Content-Type':'application/json'}, body: JSON.stringify({email, password}) })`
 - Add item (include credentials):
-    - `POST http://localhost:4444/api/cart/add` with JSON `{ "productId": "<id>", "quantity": 2 }` and `credentials: 'include'`.
+    - `POST https://mericent.onrender.com/api/cart/add` with JSON `{ "productId": "<id>", "quantity": 2 }` and `credentials: 'include'`.
 - Get cart:
-    - `GET http://localhost:4444/api/cart` with `credentials: 'include'`.
+    - `GET https://mericent.onrender.com/api/cart` with `credentials: 'include'`.
 
 If you want, I can implement guest cart support (server-side `guestId` cookie + merge-on-login) or add the combined-quantity check now. Which should I do next?
