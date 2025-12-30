@@ -106,6 +106,9 @@ const emailTemplates = {
 // Send email function
 const sendEmail = async (to, template, data, status = null) => {
   try {
+    console.log('BREVO_API_KEY exists:', !!BREVO_API_KEY);
+    console.log('BREVO_API_KEY length:', BREVO_API_KEY?.length);
+
     const templateContent = emailTemplates[template](data, status);
 
     const emailData = {
@@ -120,9 +123,12 @@ const sendEmail = async (to, template, data, status = null) => {
       htmlContent: templateContent.html
     };
 
+    console.log('Sending email to:', to);
+    console.log('Sender email:', process.env.BREVO_FROM_EMAIL || process.env.EMAIL_FROM);
+
     const response = await axios.post(BREVO_API_URL, emailData, {
       headers: {
-        'api-key': BREVO_API_KEY,
+        'Api-Key': BREVO_API_KEY,
         'Content-Type': 'application/json'
       }
     });
