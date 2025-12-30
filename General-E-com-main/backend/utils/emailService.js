@@ -1,28 +1,8 @@
-const nodemailer = require('nodemailer');
+const axios = require('axios');
 
-// Create transporter using Brevo SMTP
-const transporter = nodemailer.createTransport({
-  host: 'smtp-relay.brevo.com',
-  port: 587,
-  secure: false, // STARTTLS
-  auth: {
-    user: process.env.BREVO_SMTP_USER,
-    pass: process.env.BREVO_SMTP_PASS
-  },
-  connectionTimeout: 60000, // 60 seconds
-  greetingTimeout: 30000, // 30 seconds
-});
-
-// Optional: Test transporter connection (only in development)
-if (process.env.NODE_ENV !== 'production') {
-  transporter.verify((error, success) => {
-    if (error) {
-      console.log('Email transporter verification failed:', error);
-    } else {
-      console.log('Email transporter is ready to send emails');
-    }
-  });
-}
+// Brevo API configuration
+const BREVO_API_URL = 'https://api.brevo.com/v3/smtp/email';
+const BREVO_API_KEY = process.env.BREVO_API_KEY;
 
 // Email templates
 const emailTemplates = {
@@ -128,19 +108,30 @@ const sendEmail = async (to, template, data, status = null) => {
   try {
     const templateContent = emailTemplates[template](data, status);
 
-    const mailOptions = {
-      from: process.env.BREVO_FROM_EMAIL || process.env.EMAIL_FROM,
-      to: to,
+    const emailData = {
+      sender: {
+        name: 'Mercient Team',
+        email: process.env.BREVO_FROM_EMAIL || process.env.EMAIL_FROM
+      },
+      to: [{
+        email: to
+      }],
       subject: templateContent.subject,
-      html: templateContent.html
+      htmlContent: templateContent.html
     };
 
-    const info = await transporter.sendMail(mailOptions);
-    console.log('Email sent successfully:', info.messageId);
-    return { success: true, messageId: info.messageId };
+    const response = await axios.post(BREVO_API_URL, emailData, {
+      headers: {
+        'api-key': BREVO_API_KEY,
+        'Content-Type': 'application/json'
+      }
+    });
+
+    console.log('Email sent successfully:', response.data.messageId);
+    return { success: true, messageId: response.data.messageId };
   } catch (error) {
-    console.error('Error sending email:', error);
-    return { success: false, error: error.message };
+    console.error('Error sending email:', error.response?.data || error.message);
+    return { success: false, error: error.response?.data?.message || error.message };
   }
 };
 

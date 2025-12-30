@@ -30,6 +30,7 @@
     "passport-google-oauth20": "^2.0.0",
     "paystack-api": "^2.0.6",
     "paystack-js": "^0.18.1",
-    "slugify": "^1.6.6"
+    "slugify": "^1.6.6",
+    "axios": "^1.6.0"
   }
 }
