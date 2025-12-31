@@ -4,7 +4,9 @@
   "main": "index.js",
   "scripts": {
     "dev": "nodemon app.js",
-    "seed": "node scripts/seedProducts.js"
+    "seed": "node scripts/seedProducts.js",
+    "seed-shipping": "node scripts/seedShipping.js",
+    "create-admin": "node scripts/createAdmin.js"
   },
   "keywords": [],
   "author": "",

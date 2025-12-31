@@ -154,7 +154,7 @@
 		const userId = req.user && req.user.id;
 
 		try {
-			const { items, shippingAddress, paymentMethod, guestInfo } = req.body;
+			const { items, shippingAddress, paymentMethod, guestInfo, shipping, total } = req.body;
 
 
 			let guestId = req.cookies && req.cookies.cartId;
@@ -166,6 +166,10 @@
 			if (!shippingAddress) {
 
 				return res.status(400).json({ success: false, message: 'Shipping address is required' });
+			}
+
+			if (!shipping || !shipping.fee || !shipping.state) {
+				return res.status(400).json({ success: false, message: 'Shipping information is required' });
 			}
 
 			const allowedPayments = ['credit_card', 'paypal', 'cash_on_delivery', 'stripe', 'paystack', "whatsapp", 'other'];
@@ -216,10 +220,16 @@
 
 			}
 
+			// Calculate total amount (items + shipping)
+			const subtotal = orderItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+			const totalAmount = subtotal + shipping.fee;
+
 			const orderData = {
 				items: orderItems,
 				shippingAddress,
 				paymentMethod,
+				shipping,
+				totalAmount,
 				status: 'pending',
 				paymentStatus: 'pending'
 			};

@@ -7,6 +7,17 @@ Content-Type: application/json
 
 ###
 
+POST https://mericent.onrender.com/api/calculate-shipping
+Content-Type: application/json
+
+{
+    "state": "Lagos",
+    "itemCount": 3,
+    "subtotal": 15000
+}
+
+###
+
 POST https://mericent.onrender.com/api/productPost
 Content-Type: application/json
 

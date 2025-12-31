@@ -9,6 +9,7 @@ const cartRouter = require('./routers/cartrouter');
 const orderRouter = require('./routers/order');
 const adminRouter = require('./routers/admin');
 const paymentRouter = require('./routers/paymentRouter');
+const shippingRouter = require('./routers/shippingRouter');
 app.use(cors({ 
   origin: [
     'https://mericent.vercel.app',
@@ -40,3 +41,4 @@ app.use('/api/cart/',cartRouter);
 app.use('/api/orders', orderRouter);
 app.use('/api/admin', adminRouter);
 app.use('/api', paymentRouter);
+app.use('/api', shippingRouter);

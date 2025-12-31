@@ -10,7 +10,7 @@ const {
 const { requireAuth, isAdmin } = require('../middleware/authmiddleware');
 
 // Public route: create an order (guest or authenticated)
-orderRouter.post('/', requireAuth,require('../controlers/orderController').createOrder);
+orderRouter.post('/', require('../controlers/orderController').createOrder);
 
 // Public convenience route for creating guest orders directly (keeps backward compatibility)
 orderRouter.post('/guest', require('../controlers/orderController').createOrder);

@@ -1,5 +1,5 @@
 const express = require('express');
-const { AdminLogin, me } = require('../controlers/adminController');
+const { AdminLogin, me, getShippingPrices, createShippingPrice, updateShippingPrice, deleteShippingPrice, calculateShippingFee } = require('../controlers/adminController');
 const { requireAuth, isAdmin } = require('../middleware/authmiddleware');
 const router = express.Router();
 
@@ -18,5 +18,21 @@ router.post('/logout', (req, res) => {
 
 // GET /api/admin/me - verify admin token
 router.get('/me', requireAuth, isAdmin, me);
+
+// Shipping Management Routes
+// GET /api/admin/shipping-prices - get all active shipping options
+router.get('/shipping-prices', getShippingPrices);
+
+// POST /api/admin/shipping-prices - create new shipping option
+router.post('/shipping-prices', requireAuth, isAdmin, createShippingPrice);
+
+// PUT /api/admin/shipping-prices/:id - update shipping option
+router.put('/shipping-prices/:id', requireAuth, isAdmin, updateShippingPrice);
+
+// DELETE /api/admin/shipping-prices/:id - deactivate shipping option
+router.delete('/shipping-prices/:id', requireAuth, isAdmin, deleteShippingPrice);
+
+// POST /api/admin/calculate-shipping - calculate shipping fee based on items
+router.post('/calculate-shipping', calculateShippingFee);
 
 module.exports = router;

@@ -18,6 +18,7 @@ import {
   persistOrderLocal,
   createOrderOnServer,
   createPayment,
+  calculateShippingFee,
 } from "../utils/checkout";
 import { useFormatCurrency } from "../utils/useFormatCurrency";
 import { useCurrency } from "../context/CurrencyContext";
@@ -46,7 +47,17 @@ const CheckoutPage: React.FC = () => {
   const [shippingOptions, setShippingOptions] = useState<{ state: string; price: number }[]>([]);
   const [selectedShippingState, setSelectedShippingState] = useState<string>(localStorage.getItem('checkout_shipping_state_v1') || "");
   const [shippingFee, setShippingFee] = useState<number>(0);
+  const [shippingDetails, setShippingDetails] = useState<{
+    originalFee: number;
+    discountApplied: boolean;
+    discountPercentage: number;
+    discountAmount: number;
+    finalFee: number;
+  } | null>(null);
   const [processing, setProcessing] = useState(false);
+  const [verifyingPayment, setVerifyingPayment] = useState(false);
+  const [loadingShippingOptions, setLoadingShippingOptions] = useState(true);
+  const [loadingOrders, setLoadingOrders] = useState(true);
 
   // Delivery modal
   const [showDeliveryModal, setShowDeliveryModal] = useState(false);
@@ -85,13 +96,50 @@ const CheckoutPage: React.FC = () => {
 
   // Fetch shipping options from backend (admin-controlled)
   useEffect(() => {
-    fetchShippingOptions().then(setShippingOptions).catch(() => {});
+    fetchShippingOptions()
+      .then(setShippingOptions)
+      .catch(() => {})
+      .finally(() => setLoadingShippingOptions(false));
   }, []);
 
   // Load recent orders (backend or localStorage)
   useEffect(() => {
-    fetchOrders().then(setOrders).catch(() => {});
+    fetchOrders()
+      .then(setOrders)
+      .catch(() => {})
+      .finally(() => setLoadingOrders(false));
   }, []);
+
+  // Calculate shipping fee when state or cart items change
+  useEffect(() => {
+    const calculateShipping = async () => {
+      if (!selectedShippingState || cartItems.length === 0) {
+        setShippingFee(0);
+        setShippingDetails(null);
+        return;
+      }
+
+      const itemCount = cartItems.reduce((sum, item) => sum + item.quantity, 0);
+      const details = await calculateShippingFee(selectedShippingState, itemCount);
+
+      if (details) {
+        setShippingFee(details.finalFee);
+        setShippingDetails(details);
+      } else {
+        // Fallback
+        setShippingFee(2500);
+        setShippingDetails({
+          originalFee: 2500,
+          discountApplied: false,
+          discountPercentage: 0,
+          discountAmount: 0,
+          finalFee: 2500
+        });
+      }
+    };
+
+    calculateShipping();
+  }, [selectedShippingState, cartItems]);
 
   // Payment handler (sends cart + delivery + shipping to backend)
   const handleCheckout = async () => {
@@ -122,7 +170,14 @@ const CheckoutPage: React.FC = () => {
       const payload: Partial<Order> = {
         items: cartItems.map((c) => ({ productId: c.id, quantity: c.quantity } as any)),
         subtotal: ngnSubtotal,
-        shipping: { state: selectedShippingState, fee: shippingFee },
+        shipping: {
+          state: selectedShippingState,
+          fee: shippingFee,
+          originalFee: shippingDetails?.originalFee,
+          discountApplied: shippingDetails?.discountApplied,
+          discountPercentage: shippingDetails?.discountPercentage,
+          discountAmount: shippingDetails?.discountAmount
+        },
         shippingAddress: {
           city: deliveryInfo.cityName || '',
           state: deliveryInfo.stateName || selectedShippingState || '',
@@ -182,6 +237,7 @@ const CheckoutPage: React.FC = () => {
   const handlePaymentSuccess = async (reference: string) => {
     try {
       setProcessing(true);
+      setVerifyingPayment(true);
 
       // Verify payment with backend
       const res = await fetch(`${API_BASE_URL}/api/verify-payment`, {
@@ -199,7 +255,7 @@ const CheckoutPage: React.FC = () => {
         showAlert("Payment successful! Your order has been confirmed.", "success");
         await clearCart();
         // Refresh the page
-        window.location.reload();
+        window.location.href = "/";
       } else {
         showAlert("Payment verification failed. Please contact support if you were charged.", "error");
       }
@@ -208,6 +264,7 @@ const CheckoutPage: React.FC = () => {
       showAlert("Payment verification failed. Please contact support.", "error");
     } finally {
       setProcessing(false);
+      setVerifyingPayment(false);
     }
   };
 
@@ -243,13 +300,38 @@ const CheckoutPage: React.FC = () => {
                 shippingOptions={shippingOptions}
                 selectedShippingState={selectedShippingState}
                 setSelectedShippingState={setSelectedShippingState}
-                setShippingFee={setShippingFee}
+                loading={loadingShippingOptions}
               />
 
-              {selectedShippingState ? (
-                <p className="font-semibold mb-2">Selected: {selectedShippingState} — {formatCurrency(shippingFee)}</p>
+              {selectedShippingState && shippingDetails ? (
+                <div className="mt-4 p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
+                  <div className="flex justify-between items-center mb-2">
+                    <span className="font-semibold">Shipping to {selectedShippingState}:</span>
+                    <span className="font-bold">{formatCurrency(shippingDetails.finalFee)}</span>
+                  </div>
+                  {shippingDetails.discountApplied && (
+                    <div className="text-sm text-green-600 dark:text-green-400">
+                      <div className="flex justify-between">
+                        <span>Original price:</span>
+                        <span className="line-through">{formatCurrency(shippingDetails.originalFee)}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span>Discount ({shippingDetails.discountPercentage}%):</span>
+                        <span>-{formatCurrency(shippingDetails.discountAmount)}</span>
+                      </div>
+                      <div className="font-semibold text-green-700 dark:text-green-300 mt-1">
+                        🎉 Shipping discount applied!
+                      </div>
+                    </div>
+                  )}
+                  <div className="text-xs text-gray-500 mt-2">
+                    Price calculated based on {cartItems.reduce((sum, item) => sum + item.quantity, 0)} items
+                  </div>
+                </div>
+              ) : selectedShippingState ? (
+                <p className="text-sm text-gray-600 mt-2">Calculating shipping fee...</p>
               ) : (
-                <p className="text-sm text-gray-600 mb-2">No shipping location selected.</p>
+                <p className="text-sm text-gray-600 mt-2">Select a shipping location to see pricing.</p>
               )}
 
               <textarea
@@ -272,7 +354,7 @@ const CheckoutPage: React.FC = () => {
               <p className="text-xl font-bold mt-2">Total: {currency == "USD" ? "$" + Math.round(finalTotal * 1000)/1000 : currency == "EUR" ? "€" + Math.round(finalTotal * 1000)/1000 : currency == "GBP" ? "£" + Math.round(finalTotal * 1000)/1000 : currency == "NGN" ? "₦" + Math.round(finalTotal * 1000)/1000 : finalTotal}</p>
             </div>
 
-            <RecentOrders orders={orders.slice(-5)} />
+            <RecentOrders orders={orders.slice(-5)} loading={loadingOrders} />
 
             <button
               onClick={handleCheckout}
@@ -293,6 +375,19 @@ const CheckoutPage: React.FC = () => {
         onCancel={() => setShowOrderModal(false)}
         onPaymentSuccess={handlePaymentSuccess}
       />
+
+      {/* Payment Verification Loading Overlay */}
+      {verifyingPayment && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+          <div className="bg-white dark:bg-gray-800 rounded-lg p-6 shadow-lg flex items-center gap-4">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+            <div>
+              <h3 className="text-lg font-semibold">Verifying Payment</h3>
+              <p className="text-sm text-gray-600 dark:text-gray-400">Please wait while we confirm your payment...</p>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Shipping selection is handled inline via ShippingSelector component */}
 

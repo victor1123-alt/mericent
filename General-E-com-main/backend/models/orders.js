@@ -73,6 +73,35 @@ const Order = new mongoose.Schema({
     min: [0, 'Total amount cannot be negative']
   },
 
+  shipping: {
+    state: {
+      type: String,
+      required: true
+    },
+    fee: {
+      type: Number,
+      required: true,
+      min: [0, 'Shipping fee cannot be negative']
+    },
+    originalFee: {
+      type: Number,
+      min: [0, 'Original shipping fee cannot be negative']
+    },
+    discountApplied: {
+      type: Boolean,
+      default: false
+    },
+    discountPercentage: {
+      type: Number,
+      min: [0, 'Discount percentage cannot be negative'],
+      max: [100, 'Discount percentage cannot exceed 100']
+    },
+    discountAmount: {
+      type: Number,
+      min: [0, 'Discount amount cannot be negative']
+    }
+  },
+
   shippingAddress: {
     type: ShippingAddress,
     required: true

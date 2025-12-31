@@ -19,12 +19,21 @@ export interface DeliveryInfo {
   cityName?: string;
 }
 
+export interface ShippingInfo {
+  state: string;
+  fee: number;
+  originalFee?: number;
+  discountApplied?: boolean;
+  discountPercentage?: number;
+  discountAmount?: number;
+}
+
 export interface Order {
   id?: string | number;
   orderNumber?: string;
   items: OrderItem[];
   subtotal?: number;
-  shipping?: { state: string; fee: number };
+  shipping?: ShippingInfo;
   delivery?: DeliveryInfo;
   total?: number;
   createdAt: string;

@@ -51,8 +51,17 @@ const OrderPreviewModal: React.FC<Props> = ({ order, visible, onConfirm, onCance
         </div>
 
         <div className="mb-4 text-sm">
-          <div className="text-gray-600 dark:text-gray-300">Shipping: <span className="font-medium">{order.shipping?.state}</span> — <span className="font-semibold">{formatCurrency(order.shipping?.fee || 0)}</span></div>
-          <div className="text-lg font-bold mt-2">Total: {formatCurrency(order.total || order.subtotal || 0)}</div>
+          <div className="text-gray-600 dark:text-gray-300">
+            Shipping: <span className="font-medium">{order.shipping?.state}</span> — <span className="font-semibold">{formatCurrency(order.shipping?.fee || 0)}</span>
+            {order.shipping?.discountApplied && (
+              <div className="text-green-600 dark:text-green-400 text-xs mt-1">
+                <div>Original: {formatCurrency(order.shipping?.originalFee || 0)}</div>
+                <div>Discount: {order.shipping?.discountPercentage}% (-{formatCurrency(order.shipping?.discountAmount || 0)})</div>
+                <div className="font-semibold">🎉 Shipping discount applied!</div>
+              </div>
+            )}
+          </div>
+          <div className="text-lg font-bold mt-2">Total: {formatCurrency(order.totalAmount || order.subtotal || 0)}</div>
         </div>
 
         <div className="flex gap-3">

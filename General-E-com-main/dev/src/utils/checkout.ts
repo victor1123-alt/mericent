@@ -43,11 +43,55 @@ export async function fetchShippingOptions(): Promise<{ state: string; price: nu
     const res = await fetch("/api/shipping-prices");
     if (!res.ok) throw new Error("failed");
     const data = await res.json();
-    if (Array.isArray(data)) return data;
+    // Transform to the expected format for backward compatibility
+    // Group by state and take the first option per state
+    const stateMap = new Map();
+    data.forEach((option: any) => {
+      if (!stateMap.has(option.state)) {
+        stateMap.set(option.state, {
+          state: option.state,
+          price: option.basePrice, // Use base price as fallback
+          shippingOption: option
+        });
+      }
+    });
+    return Array.from(stateMap.values());
   } catch (err) {
-    // ignore and return fallback
+    // Return fallback with default pricing
+    return defaultShippingStates.map((s) => ({ state: s, price: 2500 }));
   }
-  return defaultShippingStates.map((s) => ({ state: s, price: 2500 }));
+}
+
+export async function calculateShippingFee(state: string, itemCount: number): Promise<{
+  originalFee: number;
+  discountApplied: boolean;
+  discountPercentage: number;
+  discountAmount: number;
+  finalFee: number;
+  shippingOption: any;
+} | null> {
+  try {
+    const res = await fetch("https://mericent.onrender.com/api/calculate-shipping", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ state, itemCount }),
+    });
+    if (!res.ok) throw new Error("failed");
+    const data = await res.json();
+    console.log("success");
+    
+    return data.shipping;
+  } catch (err) {
+    // Fallback calculation
+    return {
+      originalFee: 2500,
+      discountApplied: false,
+      discountPercentage: 0,
+      discountAmount: 0,
+      finalFee: 2500,
+      shippingOption: null
+    };
+  }
 }
 
 export async function fetchOrders(): Promise<Order[]> {

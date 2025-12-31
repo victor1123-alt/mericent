@@ -2,16 +2,24 @@ import React from 'react';
 import type { Order } from '../../types/order';
 import { useFormatCurrency } from '../../utils/useFormatCurrency';
 
-interface Props { orders: Order[] }
+interface Props { 
+  orders: Order[];
+  loading?: boolean;
+}
 
-const RecentOrders: React.FC<Props> = ({ orders }) => {
+const RecentOrders: React.FC<Props> = ({ orders, loading = false }) => {
   const formatCurrency = useFormatCurrency();
 
   
   return (
     <div className="bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-md border border-transparent dark:border-gray-700">
       <h3 className="font-bold text-lg mb-4">Recent Orders</h3>
-      {orders.length === 0 ? (
+      {loading ? (
+        <div className="flex items-center gap-2 p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
+          <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600"></div>
+          <span className="text-sm text-gray-600 dark:text-gray-400">Loading recent orders...</span>
+        </div>
+      ) : orders.length === 0 ? (
         <p className="text-sm text-gray-600 dark:text-gray-400">No recent orders.</p>
       ) : (
         <ul className="space-y-3">
