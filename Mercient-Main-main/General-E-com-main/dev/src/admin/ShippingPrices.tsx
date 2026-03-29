@@ -51,7 +51,7 @@ const ShippingPrices: React.FC = () => {
         return;
       }
 
-      const res = await fetch('http://localhost:4444/api/admin/me', {
+      const res = await fetch('https://mericent.onrender.com/api/admin/me', {
         headers: { Authorization: `Bearer ${token}` }
       });
 
@@ -63,7 +63,7 @@ const ShippingPrices: React.FC = () => {
 
   const loadShippingOptions = async () => {
     try {
-      const res = await fetch('http://localhost:4444/api/admin/shipping-prices');
+      const res = await fetch('https://mericent.onrender.com/api/admin/shipping-prices');
       if (!res.ok) throw new Error('Failed to load shipping options');
       const data = await res.json();
       setOptions(data);
@@ -85,7 +85,7 @@ const ShippingPrices: React.FC = () => {
         return;
       }
 
-      const url = editingId ? `http://localhost:4444/api/admin/shipping-prices/${editingId}` : 'http://localhost:4444/api/admin/shipping-prices';
+      const url = editingId ? `https://mericent.onrender.com/api/admin/shipping-prices/${editingId}` : 'https://mericent.onrender.com/api/admin/shipping-prices';
       const method = editingId ? 'PUT' : 'POST';
 
       const res = await fetch(url, {
@@ -139,7 +139,7 @@ const ShippingPrices: React.FC = () => {
         return;
       }
 
-      const res = await fetch(`http://localhost:4444/api/admin/shipping-prices/${id}`, {
+      const res = await fetch(`https://mericent.onrender.com/api/admin/shipping-prices/${id}`, {
         method: 'DELETE',
         headers: { Authorization: `Bearer ${token}` }
       });

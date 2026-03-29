@@ -26,7 +26,7 @@ const AdminDashboard: React.FC = () => {
       const productsResponse = await productAPI.getProducts({ limit: 1000 });
       const productsCount = productsResponse?.data?.data?.length || 0;
 
-      const ordersResponse = await fetch("http://localhost:4444/api/orders/all", {
+      const ordersResponse = await fetch("https://mericent.onrender.com/api/orders/all", {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token") || ""}`,
         },

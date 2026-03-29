@@ -58,7 +58,7 @@ const UserOrders: React.FC = () => {
 
   const fetchUserOrders = async () => {
     try {
-      const response = await fetch('http://localhost:4444/api/orders');
+      const response = await fetch('https://mericent.onrender.com/api/orders');
 
       if (response.ok) {
         const data = await response.json();

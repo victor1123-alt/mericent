@@ -4,7 +4,7 @@ Overview
 - This document contains manual verification steps to test the guest cart + guest checkout and the sync-on-login flow implemented.
 
 Prerequisites
-- Backend: running on http://localhost:4444 (npm run dev)
+- Backend: running on https://mericent.onrender.com (npm run dev)
 - Frontend: running on mericent-git-main-markcode.vercel.app (npm run dev or vite)
 - A seeded user exists (seed script created admin at admin@mercient.test.com / Password123!)
 
